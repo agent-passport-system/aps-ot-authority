@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+// Bundle: edge/aps/verify.mjs = verifier/verify.mjs + agent-passport-system 8.0.1 (Apache-2.0,
+// Copyright 2024-2026 Tymofii Pidlisnyi, LICENSE alongside). No other package is bundled.
+// Built with esbuild 0.25.10, see README.md. Source and lockfile: ../../verifier/.
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __esm = (fn, res) => function __init() {
   return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;

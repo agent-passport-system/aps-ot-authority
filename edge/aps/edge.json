@@ -13,9 +13,12 @@
   },
   "bundle": {
     "file": "verify.mjs",
-    "sha256": "0e96176fbe64bbbdc0b216f15cb5955431cb742750329797f4f42fc6e89d8a78",
+    "sha256": "b34169ed6eb632544388a06335fddefa84ef9a0d6a107d157de6a11b4ad96bfa",
     "built_with": "esbuild 0.25.10, --bundle --platform=node --format=esm --target=node20",
-    "sdk_integrity": "sha512-g9/AlzqX+L/fKzdsFQICGj59rYnXgeFxZcnmwD8WFNOK8aPSxT8FZEQe/PzGpnpG31xTLeLuMyrInX2B/Id5oA=="
+    "sdk_integrity": "sha512-g9/AlzqX+L/fKzdsFQICGj59rYnXgeFxZcnmwD8WFNOK8aPSxT8FZEQe/PzGpnpG31xTLeLuMyrInX2B/Id5oA==",
+    "contains": [
+      "agent-passport-system 8.0.1 (Apache-2.0)"
+    ]
   },
   "licence": "Apache-2.0",
   "claim_ceiling": "Decides only the delegation side of the authority-fixture contract: the APS chain is valid at the call's decision_time and its leaf grants the call's building, asset, parameter and operation. It does not check the value, the unit or the work order, and a pass never authorizes a control action. Keys are test-only and derived from public labels. Revocation is not exercised: every member is treated as active.",
