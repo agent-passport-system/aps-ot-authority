@@ -25,7 +25,7 @@ import { selectChainForAction, verifyAuthorityDelegationChain } from 'agent-pass
 import { PROFILE, grantForCall, isExactGrant, toApsTime, b64urlToHex } from './ot-scope.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const EDGE_ID = 'aps-authority-verifier';
+const EDGE_ID = 'aps';
 // At bundle time esbuild defines __SDK_VERSION__ from package-lock.json, so the single-file
 // edge does not read node_modules. Unbundled runs still read the installed package.
 const SDK_VERSION = typeof __SDK_VERSION__ !== 'undefined'

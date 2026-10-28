@@ -2899,7 +2899,7 @@ function b64urlToHex(s) {
 
 // verifier/verify.mjs
 var HERE = dirname(fileURLToPath(import.meta.url));
-var EDGE_ID = "aps-authority-verifier";
+var EDGE_ID = "aps";
 var SDK_VERSION = true ? "8.0.1" : JSON.parse(readFileSync(join(HERE, "node_modules/agent-passport-system/package.json"), "utf8")).version;
 var TRUST = JSON.parse(readFileSync(join(HERE, "trust.json"), "utf8"));
 var ROOTS = TRUST.root_verification_methods;
