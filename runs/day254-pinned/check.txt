@@ -1,0 +1,1 @@
+~/work/aps-ot-authority/runs/day254-pinned/fixtures: sealed, unchanged

@@ -1,0 +1,1 @@
+~/work/aps-ot-authority/runs/day254-pinned/fixtures: 5 cases from {'project': 'Agent Passport System', 'repository': 'https://github.com/agent-passport-system/aps-ot-authority', 'revision': '853a274906c3ef9df19ac6e27f6bd58d5e4a0f94'}, sha256:cf5cdbf3345b844df6254314f02de001ed3d4ba2141b76355b068d40a26240d6

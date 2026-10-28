@@ -2,9 +2,9 @@
   "schema": "ot-authority-submission/v1",
   "set_id": "aps-1",
   "source": {
-    "project": "Agent Passport System (aeoess)",
-    "repository": "aeoess/aps-ot-authority (local prototype, not published)",
-    "revision": "38c4498886b9b21a33adc94a26013ace0b20981f"
+    "project": "Agent Passport System",
+    "repository": "https://github.com/agent-passport-system/aps-ot-authority",
+    "revision": "853a274906c3ef9df19ac6e27f6bd58d5e4a0f94"
   },
   "delegation_format": "aps:authority-delegation:v1 (agent-passport-system 8.0.1, npm integrity sha512-g9/AlzqX+L/fKzdsFQICGj59rYnXgeFxZcnmwD8WFNOK8aPSxT8FZEQe/PzGpnpG31xTLeLuMyrInX2B/Id5oA==). Each file is the complete signed chain, a JSON array root to leaf; delegation_id is the leaf's. Scope: aps-hierarchical-v1 grants in ot-scope/v1, one exact grant ot:<building_id>:<asset>:<parameter>:<operation> per tuple, no wildcards. Validity: authority.time, not_before inclusive, not_after exclusive, UTC milliseconds.",
   "scope": "The five cases of issue #27 as APS authority-delegation chains on the simulated building. Synthetic; TEST-ONLY keys derived from public labels (mint/mint.mjs); no physical control.",

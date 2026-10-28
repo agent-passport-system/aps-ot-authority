@@ -1,0 +1,1 @@
+~/work/aps-ot-authority/edge/aps: valid ot-edge-manifest/v1
