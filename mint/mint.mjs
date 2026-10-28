@@ -140,7 +140,7 @@ const cases = CASES.map(c => {
 write(join(OUT, 'submission.json'), {
   schema: 'ot-authority-submission/v1',
   set_id: 'aps-1',
-  source: { project: 'Agent Passport System (aeoess)', repository: 'aeoess/aps-ot-authority (local prototype, not published)', revision: rev },
+  source: { project: 'Agent Passport System', repository: 'https://github.com/agent-passport-system/aps-ot-authority', revision: rev },
   delegation_format: 'aps:authority-delegation:v1 (agent-passport-system 8.0.1, npm integrity sha512-g9/AlzqX+L/fKzdsFQICGj59rYnXgeFxZcnmwD8WFNOK8aPSxT8FZEQe/PzGpnpG31xTLeLuMyrInX2B/Id5oA==). '
     + 'Each file is the complete signed chain, a JSON array root to leaf; delegation_id is the leaf\'s. '
     + `Scope: aps-hierarchical-v1 grants in ${PROFILE}, one exact grant ot:<building_id>:<asset>:<parameter>:<operation> per tuple, no wildcards. `
