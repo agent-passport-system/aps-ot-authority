@@ -1,0 +1,51 @@
+{
+  "schema": "ot-edge-manifest/v1",
+  "edge_id": "aps",
+  "project": "Agent Passport System",
+  "maintainer": "aeoess",
+  "repository": "https://github.com/agent-passport-system/agent-passport-system",
+  "boundary": "authority_fixture",
+  "mode": "offline",
+  "delegation_format": "aps:authority-delegation:v1 chain (agent-passport-system 8.0.1), scope grants in ot-scope/v1",
+  "pin": {
+    "kind": "package",
+    "value": "agent-passport-system@8.0.1"
+  },
+  "bundle": {
+    "file": "verify.mjs",
+    "sha256": "0e96176fbe64bbbdc0b216f15cb5955431cb742750329797f4f42fc6e89d8a78",
+    "built_with": "esbuild 0.25.10, --bundle --platform=node --format=esm --target=node20",
+    "sdk_integrity": "sha512-g9/AlzqX+L/fKzdsFQICGj59rYnXgeFxZcnmwD8WFNOK8aPSxT8FZEQe/PzGpnpG31xTLeLuMyrInX2B/Id5oA=="
+  },
+  "licence": "Apache-2.0",
+  "claim_ceiling": "Decides only the delegation side of the authority-fixture contract: the APS chain is valid at the call's decision_time and its leaf grants the call's building, asset, parameter and operation. It does not check the value, the unit or the work order, and a pass never authorizes a control action. Keys are test-only and derived from public labels. Revocation is not exercised: every member is treated as active.",
+  "claims": [
+    {
+      "claim_id": "delegation_valid_at_decision_time",
+      "claim_ceiling": "pass means only that the chain verifies under agent-passport-system 8.0.1 at the case's decision_time against the test-only root in trust.json: signatures, parent links, narrowing on every facet, time window. Revocation is not consulted."
+    },
+    {
+      "claim_id": "scope_covers_call",
+      "claim_ceiling": "pass means only that the leaf grant equals ot:<building_id>:<asset>:<parameter>:<operation> for the normalized call by string equality. The value, the unit and the work order are not read."
+    }
+  ],
+  "evaluator": {
+    "kind": "reference",
+    "imports_reference_verifier": true,
+    "imports_testbed_code": false,
+    "language": "javascript",
+    "runtime": "node >= 20, single file, no install step"
+  },
+  "entrypoint": {
+    "image": "node:24-slim@sha256:be8204d4bd327363357f532187b752ff62759c31bedf98e9e18fc08c9cbd605c",
+    "command": [
+      "node",
+      "/edge/verify.mjs",
+      "run",
+      "--fixtures",
+      "/fixtures",
+      "--out",
+      "/out/result.json"
+    ]
+  }
+}

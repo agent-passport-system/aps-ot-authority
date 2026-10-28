@@ -26,7 +26,11 @@ import { PROFILE, grantForCall, isExactGrant, toApsTime, b64urlToHex } from './o
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const EDGE_ID = 'aps-authority-verifier';
-const SDK_VERSION = JSON.parse(readFileSync(join(HERE, 'node_modules/agent-passport-system/package.json'), 'utf8')).version;
+// At bundle time esbuild defines __SDK_VERSION__ from package-lock.json, so the single-file
+// edge does not read node_modules. Unbundled runs still read the installed package.
+const SDK_VERSION = typeof __SDK_VERSION__ !== 'undefined'
+  ? __SDK_VERSION__
+  : JSON.parse(readFileSync(join(HERE, 'node_modules/agent-passport-system/package.json'), 'utf8')).version;
 
 // Trust comes from this directory, never from the fixture set under test.
 const TRUST = JSON.parse(readFileSync(join(HERE, 'trust.json'), 'utf8'));

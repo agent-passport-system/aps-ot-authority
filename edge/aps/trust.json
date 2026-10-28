@@ -1,0 +1,9 @@
+{
+  "note": "TEST-ONLY keys, derived from public labels in mint/mint.mjs. Anyone can sign with them. Never trust them anywhere else.",
+  "root_verification_methods": {
+    "aps-test:building-owner#key-1": "6RG6ABmNUgm6SaVZ_Ys2BphSQVuyDkwObl-xd69bPfk"
+  },
+  "signer_verification_methods": {
+    "aps-test:operator#key-1": "c5P8WKPwah0BkEttd2zJsLiiD8pvKwAXA7mIwUXRFrs"
+  }
+}
