@@ -1,0 +1,11 @@
+{
+  "name": "aps-ot-authority-verifier",
+  "version": "1.0.0",
+  "description": "APS delegation verifier for the authority_fixture harness",
+  "license": "Apache-2.0",
+  "type": "module",
+  "dependencies": {
+    "agent-passport-system": "8.0.1"
+  },
+  "private": true
+}

@@ -1,0 +1,15 @@
+{
+  "name": "aps-ot-authority",
+  "version": "0.1.0",
+  "private": true,
+  "description": "APS delegations and verifier for the autonomous-ot-control authority_fixture harness (issue #27). Local prototype.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "mint": "node mint/mint.mjs",
+    "selftest": "node verifier/selftest.mjs"
+  },
+  "dependencies": {
+    "agent-passport-system": "8.0.1"
+  }
+}
