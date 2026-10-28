@@ -1,0 +1,94 @@
+name: verifier image
+
+# Builds the verifier image, publishes it to GHCR, then runs the testbed's own harness
+# against that exact digest through its Docker sandbox (no --trust-edge).
+# Manual only. No third-party actions: git, docker and python from the runner.
+
+on:
+  workflow_dispatch:
+    inputs:
+      testbed_commit:
+        description: autonomous-ot-control commit to run against
+        required: true
+        default: b1e9f0a
+
+permissions:
+  contents: read
+
+jobs:
+  build-publish-run:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    env:
+      IMAGE: ghcr.io/agent-passport-system/aps-ot-authority-verifier
+    steps:
+      - name: Source at the dispatched commit
+        run: |
+          git init -q src && cd src
+          git fetch -q --depth 1 "https://github.com/${GITHUB_REPOSITORY}.git" "${GITHUB_SHA}"
+          git checkout -q FETCH_HEAD
+          git rev-parse HEAD
+          sha256sum edge/aps/verify.mjs edge/aps/trust.json
+
+      - name: Build
+        working-directory: src
+        run: |
+          docker build --pull -f image/Dockerfile \
+            --label org.opencontainers.image.source="https://github.com/${GITHUB_REPOSITORY}" \
+            --label org.opencontainers.image.revision="${GITHUB_SHA}" \
+            --label org.opencontainers.image.licenses=Apache-2.0 \
+            -t "${IMAGE}:${GITHUB_SHA}" .
+
+      - name: Publish and read back the digest
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${GITHUB_ACTOR}" --password-stdin
+          docker push "${IMAGE}:${GITHUB_SHA}"
+          docker logout ghcr.io
+          ref=$(docker inspect --format '{{index .RepoDigests 0}}' "${IMAGE}:${GITHUB_SHA}")
+          echo "IMAGE_REF=${ref}" >> "$GITHUB_ENV"
+          echo "image: ${ref}"
+
+      - name: Testbed at the pinned commit
+        run: |
+          git init -q testbed && cd testbed
+          git fetch -q "https://github.com/darklordVirtual/autonomous-ot-control.git"
+          git checkout -q "${{ inputs.testbed_commit }}"
+          git rev-parse HEAD
+          python3 -m venv ../venv
+          ../venv/bin/python -m pip install -q --require-hashes --no-deps -r requirements-dev.lock
+
+      - name: Anonymous pull by digest (what the testbed's CI will do)
+        run: |
+          docker rmi "${IMAGE}:${GITHUB_SHA}" || true
+          docker pull "${IMAGE_REF}"
+
+      - name: Run the harness in the sandbox, by digest
+        working-directory: testbed
+        run: |
+          set -euo pipefail
+          mkdir -p ../edge/aps
+          python3 - "$IMAGE_REF" ../src/edge/aps/edge.json ../edge/aps/edge.json <<'PY'
+          import json, sys
+          ref, src, dst = sys.argv[1:4]
+          e = json.load(open(src))
+          e["pin"] = {"kind": "image_digest", "value": ref}
+          e["entrypoint"] = {"image": ref, "command": ["node", "/opt/aps/verify.mjs", "run", "--fixtures", "/fixtures", "--out", "/out/result.json"]}
+          e.pop("bundle", None)
+          json.dump(e, open(dst, "w"), indent=2)
+          PY
+          cat ../edge/aps/edge.json
+          ../venv/bin/python -m runner.edge_check --validate ../edge/aps
+          ../venv/bin/python -m runner.authority_fixtures assemble --submission ../src/submission/aps-1/submission.json --out ../fx
+          ../venv/bin/python -m runner.authority_fixtures check ../fx
+          ../venv/bin/python -m runner.authority_harness --fixtures ../fx --verifier ../edge/aps --out ../out --timeout 300 | tee ../harness.txt
+          grep -q "Result: \*\*PASS\*\*" ../harness.txt
+
+      - name: Keep the record
+        if: always()
+        run: |
+          mkdir -p record && cp -r out harness.txt edge/aps/edge.json record/ 2>/dev/null || true
+          { echo "source ${GITHUB_SHA}"; echo "image ${IMAGE_REF:-none}"; echo "testbed $(git -C testbed rev-parse HEAD 2>/dev/null)"; } > record/PINS.txt
+          tar czf record.tgz record
+          echo "record sha256 $(sha256sum record.tgz)"
