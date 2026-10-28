@@ -1,0 +1,8 @@
+submission/aps-1: 5 cases built at 38c4498886b9b21a33adc94a26013ace0b20981f
+  af-1-valid  sha256:f5cbee1f860f7f58423b2ccdecb4143143dc816942763dc32cebdeb3a3cedd6e
+  af-2-widened  sha256:3d82edbe46fe8956a777928657c47083fedd858124dea214b8014e13010eefb2
+  af-3-expired  sha256:cc660515db7a1ac4830a7522f13707c1f527e4846d4c2fee42d1e0cb9ffbc64d
+  af-4-out-of-scope  sha256:3f1868e184a5b8ba1e6709554bc3461296ddfca00eb10e33457861edfb7b2439
+  af-5-value-out-of-range  sha256:4208956f10743a127a3ebd2387839132077e08c04a4ae457c8ab4a4c48adf6e8
+exit=0
+mint rerun: byte-identical (diff -r exit 0)

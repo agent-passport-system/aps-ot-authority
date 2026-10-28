@@ -1,0 +1,8 @@
+$ JCS / binding cross-check (runner.jcs vs agent-passport-system canonicalizeJCS; work order binding vs leaf)
+af-1-valid: runner.jcs=7987d427c75a6600.. sdk=7987d427c75a6600.. wo.delegation_sha256=7987d427c75a6600.. carried_unchanged=True wo.delegation_id==leaf=True -> ok
+af-2-widened: runner.jcs=f329944dae51d9ac.. sdk=f329944dae51d9ac.. wo.delegation_sha256=f329944dae51d9ac.. carried_unchanged=True wo.delegation_id==leaf=True -> ok
+af-3-expired: runner.jcs=9fd6c7bacbf64539.. sdk=9fd6c7bacbf64539.. wo.delegation_sha256=9fd6c7bacbf64539.. carried_unchanged=True wo.delegation_id==leaf=True -> ok
+af-4-out-of-scope: runner.jcs=684e0d378a9edcd9.. sdk=684e0d378a9edcd9.. wo.delegation_sha256=684e0d378a9edcd9.. carried_unchanged=True wo.delegation_id==leaf=True -> ok
+af-5-value-out-of-range: runner.jcs=b1be1d9eefcbf1e2.. sdk=b1be1d9eefcbf1e2.. wo.delegation_sha256=b1be1d9eefcbf1e2.. carried_unchanged=True wo.delegation_id==leaf=True -> ok
+all match
+exit=0

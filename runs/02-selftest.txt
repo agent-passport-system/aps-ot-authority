@@ -1,0 +1,21 @@
+ok   decision at 17:59:59, leaf ends 18:00: expected pass scope_covered; got pass (scope_covered: chain valid at 2026-01-15T17:59:59.000Z, leaf grants ot:demo-building-001:ZONE-01:setpoint_c:set_zone_setpoint)
+ok   decision at 18:00:00, not_after exclusive: expected refuse EXPIRED; got refuse (EXPIRED@1: delegation has expired)
+ok   decision before not_before: expected refuse NOT_YET_VALID; got refuse (NOT_YET_VALID@0: delegation is not yet valid)
+ok   leaf signature tampered: expected refuse SIGNATURE_INVALID; got refuse (SIGNATURE_INVALID@1: Ed25519 signature is invalid)
+ok   leaf scope edited after signing: expected refuse ID_MISMATCH; got refuse (ID_MISMATCH@1: delegation content address does not match body)
+ok   leaf presented without its root: expected refuse ROOT_UNTRUSTED; got refuse (ROOT_UNTRUSTED@0: root is not accepted by verifier trust policy)
+ok   other building: expected refuse scope_not_covered; got refuse (scope_not_covered: leaf does not grant ot:demo-building-002:ZONE-01:setpoint_c:set_zone_setpoint)
+ok   other parameter: expected refuse scope_not_covered; got refuse (scope_not_covered: leaf does not grant ot:demo-building-001:ZONE-01:mode:set_zone_setpoint)
+ok   other operation: expected refuse scope_not_covered; got refuse (scope_not_covered: leaf does not grant ot:demo-building-001:ZONE-01:setpoint_c:set_zone_mode)
+ok   asset carrying a colon: expected refuse ot_call_unencodable; got refuse (ot_call_unencodable: asset contains ":")
+ok   asset carrying a wildcard: expected refuse ot_call_unencodable; got refuse (ot_call_unencodable: asset contains "*")
+ok   decision time with fractional seconds: expected refuse ot_decision_time_malformed; got refuse (ot_decision_time_malformed: decision_time is not YYYY-MM-DDTHH:MM:SSZ: "2026-01-15T07:00:00.5Z")
+ok   wildcard grants, SDK covers the call: expected refuse ot_wildcard_grant; got refuse (ot_wildcard_grant@0: ot:demo-building-001:*)
+ok   value outside any range (not APS's check): expected pass scope_covered; got pass (scope_covered: chain valid at 2026-01-15T07:00:00.000Z, leaf grants ot:demo-building-001:ZONE-01:setpoint_c:set_zone_setpoint)
+jcs-sha256 af-1-valid 7987d427c75a66002563959bafe1bbae9092242457e2578cfd1332d985ce38fe
+jcs-sha256 af-2-widened f329944dae51d9ac78abad8e5c06c833d2b7eba154e4eed54d48cc6eb8ae0bcc
+jcs-sha256 af-3-expired 9fd6c7bacbf645393f37fece4ea8756ab68d3d0fc98efb187433a1e25b724503
+jcs-sha256 af-4-out-of-scope 684e0d378a9edcd9db17317588e11a3d0d028bba98b4051e53e428471f972e10
+jcs-sha256 af-5-value-out-of-range b1be1d9eefcbf1e251a97869d5d584b54e41b1acebf9758322a6f5c03b9c109b
+all 14 checks as expected
+exit=0

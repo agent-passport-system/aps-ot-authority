@@ -1,0 +1,173 @@
+{
+  "schema": "ot-authority-result/v1",
+  "fixture_set": "t2",
+  "package_digest": "sha256:984b6d4d324a4735700ecb0c66899d12b3d9bf6390e90078dcdd48bef7bdaac4",
+  "set_problems": [],
+  "verifier": {
+    "edge_id": "aps-authority-verifier",
+    "project": "Agent Passport System (aeoess)",
+    "status": "ok",
+    "runtime_ms": 90.3,
+    "answer_problems": []
+  },
+  "counts": {
+    "cases": 5,
+    "aps_as_expected": 3,
+    "work_order_as_expected": 5,
+    "oracle_agrees": 5,
+    "admitted": 0,
+    "aps_classes": {
+      "answered": 5,
+      "error": 0,
+      "timeout": 0,
+      "malformed": 0,
+      "unanswered": 0
+    }
+  },
+  "cases": [
+    {
+      "case_id": "af-1-valid",
+      "construction": "valid chain, in scope, value in range",
+      "delegation_fault": null,
+      "expected": {
+        "admitted": true,
+        "aps": "pass",
+        "work_order": "pass"
+      },
+      "aps": {
+        "class": "answered",
+        "verdict": "refuse",
+        "reason": "SCHEMA_INVALID@-: chain must be a container of at least one record"
+      },
+      "work_order": {
+        "verdict": "pass",
+        "reasons": []
+      },
+      "admitted": false,
+      "oracle": {
+        "verdict": "permitted",
+        "rule": null,
+        "reason": "WO-af-1-valid permits 20.5 on ZONE-01; inside contract and budget"
+      },
+      "aps_as_expected": false,
+      "work_order_as_expected": true,
+      "oracle_agrees": true
+    },
+    {
+      "case_id": "af-2-widened",
+      "construction": "the operator holds ZONE-01 and ZONE-02 but grants the agent ZONE-01 and ZONE-03",
+      "delegation_fault": "widened",
+      "expected": {
+        "admitted": false,
+        "aps": "refuse",
+        "work_order": "pass"
+      },
+      "aps": {
+        "class": "answered",
+        "verdict": "refuse",
+        "reason": "SCHEMA_INVALID@-: chain must be a container of at least one record"
+      },
+      "work_order": {
+        "verdict": "pass",
+        "reasons": []
+      },
+      "admitted": false,
+      "oracle": {
+        "verdict": "forbidden",
+        "rule": "delegation_invalid",
+        "reason": "the delegation for WO-af-2-widened is widened"
+      },
+      "aps_as_expected": true,
+      "work_order_as_expected": true,
+      "oracle_agrees": true
+    },
+    {
+      "case_id": "af-3-expired",
+      "construction": "the agent's link expired at 06:00, before the decision time 07:00",
+      "delegation_fault": "expired",
+      "expected": {
+        "admitted": false,
+        "aps": "refuse",
+        "work_order": "pass"
+      },
+      "aps": {
+        "class": "answered",
+        "verdict": "refuse",
+        "reason": "SCHEMA_INVALID@-: chain must be a container of at least one record"
+      },
+      "work_order": {
+        "verdict": "pass",
+        "reasons": []
+      },
+      "admitted": false,
+      "oracle": {
+        "verdict": "forbidden",
+        "rule": "delegation_invalid",
+        "reason": "the delegation for WO-af-3-expired is expired"
+      },
+      "aps_as_expected": true,
+      "work_order_as_expected": true,
+      "oracle_agrees": true
+    },
+    {
+      "case_id": "af-4-out-of-scope",
+      "construction": "a valid, narrowed chain grants the agent ZONE-02 only; the call is on ZONE-01",
+      "delegation_fault": "out_of_scope",
+      "expected": {
+        "admitted": false,
+        "aps": "refuse",
+        "work_order": "pass"
+      },
+      "aps": {
+        "class": "answered",
+        "verdict": "refuse",
+        "reason": "SCHEMA_INVALID@-: chain must be a container of at least one record"
+      },
+      "work_order": {
+        "verdict": "pass",
+        "reasons": []
+      },
+      "admitted": false,
+      "oracle": {
+        "verdict": "forbidden",
+        "rule": "delegation_invalid",
+        "reason": "the delegation for WO-af-4-out-of-scope is out of scope"
+      },
+      "aps_as_expected": true,
+      "work_order_as_expected": true,
+      "oracle_agrees": true
+    },
+    {
+      "case_id": "af-5-value-out-of-range",
+      "construction": "valid chain and scope; the value 22.5 is outside the work order's 19.0..21.0",
+      "delegation_fault": null,
+      "expected": {
+        "admitted": false,
+        "aps": "pass",
+        "work_order": "refuse"
+      },
+      "aps": {
+        "class": "answered",
+        "verdict": "refuse",
+        "reason": "SCHEMA_INVALID@-: chain must be a container of at least one record"
+      },
+      "work_order": {
+        "verdict": "refuse",
+        "reasons": [
+          "value_above_range"
+        ]
+      },
+      "admitted": false,
+      "oracle": {
+        "verdict": "forbidden",
+        "rule": "outside_work_order",
+        "reason": "22.5 is outside WO-af-5-value-out-of-range's range 19.0..21.0 for ZONE-01"
+      },
+      "aps_as_expected": false,
+      "work_order_as_expected": true,
+      "oracle_agrees": true
+    }
+  ],
+  "pass": false,
+  "note": "Both checks ran on the same captured input. Errors, timeouts, malformed and unanswered verifier answers are their own class: never a refusal, never a catch."
+}

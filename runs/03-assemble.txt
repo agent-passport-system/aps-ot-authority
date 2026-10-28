@@ -1,0 +1,3 @@
+$ python -m runner.authority_fixtures assemble --submission ~/work/aps-ot-authority/submission/aps-1/submission.json --out ~/work/aps-ot-authority/runs/fixtures/aps-1
+~/work/aps-ot-authority/runs/fixtures/aps-1: 5 cases from {'project': 'Agent Passport System (aeoess)', 'repository': 'aeoess/aps-ot-authority (local prototype, not published)', 'revision': '38c4498886b9b21a33adc94a26013ace0b20981f'}, sha256:cf5cdbf3345b844df6254314f02de001ed3d4ba2141b76355b068d40a26240d6
+exit=0

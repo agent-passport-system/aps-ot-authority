@@ -1,0 +1,3 @@
+$ python -m runner.authority_fixtures check ~/work/aps-ot-authority/runs/fixtures/aps-1
+~/work/aps-ot-authority/runs/fixtures/aps-1: sealed, unchanged
+exit=0

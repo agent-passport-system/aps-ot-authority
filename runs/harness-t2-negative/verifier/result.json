@@ -1,0 +1,77 @@
+{
+  "schema": "ot-authority-verifier-result/v1",
+  "edge_id": "aps-authority-verifier",
+  "verifier_revision": "agent-passport-system@8.0.1; ot-scope/v1",
+  "verdicts": [
+    {
+      "case_id": "af-1-valid",
+      "verdict": "refuse",
+      "reason": "SCHEMA_INVALID@-: chain must be a container of at least one record",
+      "aps": {
+        "required_grant": "ot:demo-building-001:ZONE-01:setpoint_c:set_zone_setpoint",
+        "now": "2026-01-15T07:00:00.000Z",
+        "selected": false,
+        "selection_code": "no_valid_chain",
+        "evaluation_outcome": "refuses",
+        "code": "SCHEMA_INVALID",
+        "chain_state": "invalid"
+      }
+    },
+    {
+      "case_id": "af-2-widened",
+      "verdict": "refuse",
+      "reason": "SCHEMA_INVALID@-: chain must be a container of at least one record",
+      "aps": {
+        "required_grant": "ot:demo-building-001:ZONE-01:setpoint_c:set_zone_setpoint",
+        "now": "2026-01-15T07:00:00.000Z",
+        "selected": false,
+        "selection_code": "no_valid_chain",
+        "evaluation_outcome": "refuses",
+        "code": "SCHEMA_INVALID",
+        "chain_state": "invalid"
+      }
+    },
+    {
+      "case_id": "af-3-expired",
+      "verdict": "refuse",
+      "reason": "SCHEMA_INVALID@-: chain must be a container of at least one record",
+      "aps": {
+        "required_grant": "ot:demo-building-001:ZONE-01:setpoint_c:set_zone_setpoint",
+        "now": "2026-01-15T07:00:00.000Z",
+        "selected": false,
+        "selection_code": "no_valid_chain",
+        "evaluation_outcome": "refuses",
+        "code": "SCHEMA_INVALID",
+        "chain_state": "invalid"
+      }
+    },
+    {
+      "case_id": "af-4-out-of-scope",
+      "verdict": "refuse",
+      "reason": "SCHEMA_INVALID@-: chain must be a container of at least one record",
+      "aps": {
+        "required_grant": "ot:demo-building-001:ZONE-01:setpoint_c:set_zone_setpoint",
+        "now": "2026-01-15T07:00:00.000Z",
+        "selected": false,
+        "selection_code": "no_valid_chain",
+        "evaluation_outcome": "refuses",
+        "code": "SCHEMA_INVALID",
+        "chain_state": "invalid"
+      }
+    },
+    {
+      "case_id": "af-5-value-out-of-range",
+      "verdict": "refuse",
+      "reason": "SCHEMA_INVALID@-: chain must be a container of at least one record",
+      "aps": {
+        "required_grant": "ot:demo-building-001:ZONE-01:setpoint_c:set_zone_setpoint",
+        "now": "2026-01-15T07:00:00.000Z",
+        "selected": false,
+        "selection_code": "no_valid_chain",
+        "evaluation_outcome": "refuses",
+        "code": "SCHEMA_INVALID",
+        "chain_state": "invalid"
+      }
+    }
+  ]
+}
