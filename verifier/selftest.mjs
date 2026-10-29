@@ -13,7 +13,7 @@ import { issueAuthorityDelegation, issueSubAuthorityDelegation, canonicalizeJCS,
 import { decide } from './verify.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const load = id => JSON.parse(readFileSync(join(ROOT, 'submission/aps-1/delegations', `${id}.json`), 'utf8'));
+const load = id => JSON.parse(readFileSync(join(ROOT, 'submission/aps-2/delegations', `${id}.json`), 'utf8'));
 const call = (over = {}) => ({ schema: 'ot-normalized-call/v1', building_id: 'demo-building-001', asset: 'ZONE-01',
   parameter: 'setpoint_c', operation: 'set_zone_setpoint', value: 20.5, unit: 'degC',
   decision_time: '2026-01-15T07:00:00Z', ...over });
@@ -59,9 +59,12 @@ const CHECKS = [
 let failed = 0;
 for (const [name, chain, c, verdict, code] of CHECKS) {
   const got = decide(c, chain);
-  const ok = got.verdict === verdict && got.reason.startsWith(code);
+  // identity-reason/v2: the reason is the bare code, equal by string comparison, and the leaf
+  // id is reported on every verdict, including refusals, read from the chain itself.
+  const wantId = Array.isArray(chain) && chain.length ? chain[chain.length - 1].delegation_id : null;
+  const ok = got.verdict === verdict && got.reason === code && got.delegation_id === wantId && typeof got.detail === 'string';
   if (!ok) failed++;
-  console.log(`${ok ? 'ok  ' : 'FAIL'} ${name}: expected ${verdict} ${code}; got ${got.verdict} (${got.reason})`);
+  console.log(`${ok ? 'ok  ' : 'FAIL'} ${name}: expected ${verdict} ${code} id=${wantId?.slice(0, 19)}; got ${got.verdict} ${got.reason} id=${got.delegation_id?.slice(0, 19)} (${got.detail})`);
 }
 // The SDK's JCS digest of each delegation file, to compare with runner.jcs on the testbed side.
 for (const id of ['af-1-valid', 'af-2-widened', 'af-3-expired', 'af-4-out-of-scope', 'af-5-value-out-of-range'])

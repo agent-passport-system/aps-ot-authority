@@ -1,7 +1,4 @@
 #!/usr/bin/env node
-// Bundle: edge/aps/verify.mjs = verifier/verify.mjs + agent-passport-system 8.0.1 (Apache-2.0,
-// Copyright 2024-2026 Tymofii Pidlisnyi, LICENSE alongside). No other package is bundled.
-// Built with esbuild 0.25.10, see README.md. Source and lockfile: ../../verifier/.
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __esm = (fn, res) => function __init() {
   return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
@@ -2917,17 +2914,24 @@ function options(now) {
     resolveRevocation: () => "active"
   };
 }
+function leafId(chain) {
+  if (!Array.isArray(chain) || chain.length === 0) return null;
+  const id = chain[chain.length - 1]?.delegation_id;
+  return typeof id === "string" && id.length > 0 ? id : null;
+}
 function decide(call, chain) {
+  const delegation_id = leafId(chain);
+  const answer = (verdict, reason, detail, aps2) => ({ verdict, reason, detail, delegation_id, ...aps2 ? { aps: aps2 } : {} });
   let grant, now;
   try {
     grant = grantForCall(call);
   } catch (e) {
-    return { verdict: "refuse", reason: `ot_call_unencodable: ${e.message}` };
+    return answer("refuse", "ot_call_unencodable", e.message);
   }
   try {
     now = toApsTime(call.decision_time);
   } catch (e) {
-    return { verdict: "refuse", reason: `ot_decision_time_malformed: ${e.message}` };
+    return answer("refuse", "ot_decision_time_malformed", e.message);
   }
   const opts = options(now);
   const sel = selectChainForAction({ held: [{ chain_id: "presented", chain }], requiredGrants: [grant], options: opts });
@@ -2935,25 +2939,25 @@ function decide(call, chain) {
   if (!sel.selected) {
     const ev = sel.evaluations[0];
     aps.selection_code = sel.code;
-    if (!ev) return { verdict: "refuse", reason: sel.code, aps };
+    if (!ev) return answer("refuse", sel.code, "no chain evaluation", aps);
     Object.assign(aps, { evaluation_outcome: ev.outcome, code: ev.code, chain_state: ev.chain_state });
-    let detail = "";
+    let detail = ev.code;
     if (ev.chain_state && ev.chain_state !== "valid") {
       const f = verifyAuthorityDelegationChain(chain, opts).failures[0];
-      if (f) detail = `@${f.index ?? "-"}: ${f.message}`;
+      if (f) detail = `member ${f.index ?? "-"}: ${f.message}`;
     } else if (ev.code === "scope_not_covered") {
-      detail = `: leaf does not grant ${grant}`;
+      detail = `leaf does not grant ${grant}`;
     }
-    if (ev.outcome === "undecided") return { verdict: "indeterminate", reason: `${ev.code}${detail}`, aps };
-    return { verdict: "refuse", reason: `${ev.code}${detail}`, aps };
+    if (ev.outcome === "undecided") return answer("indeterminate", ev.code, detail, aps);
+    return answer("refuse", ev.code, detail, aps);
   }
   for (let i = 0; i < chain.length; i++) {
     const bad = chain[i].authority.scope.grants.find((g) => !isExactGrant(g));
-    if (bad !== void 0) return { verdict: "refuse", reason: `ot_wildcard_grant@${i}: ${bad}`, aps };
+    if (bad !== void 0) return answer("refuse", "ot_wildcard_grant", `member ${i}: ${bad}`, aps);
   }
   aps.code = sel.evaluations[0].code;
   aps.chain_state = sel.result.state;
-  return { verdict: "pass", reason: `${aps.code}: chain valid at ${now}, leaf grants ${grant}`, aps };
+  return answer("pass", aps.code, `chain valid at ${now}, leaf grants ${grant}`, aps);
 }
 function run(fixtures, out) {
   const manifest = JSON.parse(readFileSync(join(fixtures, "manifest.json"), "utf8"));
@@ -2964,7 +2968,7 @@ function run(fixtures, out) {
       const c = JSON.parse(readFileSync(join(fixtures, "cases", `${case_id}.json`), "utf8"));
       v = decide(c.call, c.delegation);
     } catch (e) {
-      v = { verdict: "error", reason: `${e?.name ?? "Error"}: ${e?.message ?? e}` };
+      v = { verdict: "error", reason: "ot_verifier_error", detail: `${e?.name ?? "Error"}: ${e?.message ?? e}`, delegation_id: null };
     }
     verdicts.push({ case_id, ...v });
   }
@@ -2988,5 +2992,6 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   run(arg("--fixtures"), arg("--out"));
 }
 export {
-  decide
+  decide,
+  leafId
 };

@@ -13,7 +13,7 @@
   },
   "bundle": {
     "file": "verify.mjs",
-    "sha256": "8a8d58b125e3ed73d56f8b86caa28285fedf7a11b899d4456a46a25db4805ac7",
+    "sha256": "82171e200cb9e48e9ab74ef191991dc1e669eeb2b895b45ab9d265937aeb6073",
     "built_with": "esbuild 0.25.10, --bundle --platform=node --format=esm --target=node20",
     "sdk_integrity": "sha512-g9/AlzqX+L/fKzdsFQICGj59rYnXgeFxZcnmwD8WFNOK8aPSxT8FZEQe/PzGpnpG31xTLeLuMyrInX2B/Id5oA==",
     "contains": [

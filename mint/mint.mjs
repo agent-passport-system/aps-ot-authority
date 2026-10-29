@@ -4,7 +4,7 @@
 //
 //     node mint/mint.mjs [--revision <commit>]
 //
-// Writes submission/aps-1/ and verifier/trust.json. Deterministic: Ed25519 is
+// Writes submission/aps-2/ and verifier/trust.json. Deterministic: Ed25519 is
 // deterministic, every nonce and time is fixed, so a rerun writes the same bytes.
 //
 // TEST-ONLY KEYS. Each private key is the SHA-256 of a public label, so anyone can sign
@@ -23,7 +23,11 @@ import {
 import { PROFILE, grantsForScope, hexToB64url } from '../verifier/ot-scope.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const OUT = join(ROOT, 'submission', 'aps-1');
+// aps-2 is the strict identity-reason/v2 submission (testbed PR #38): same five chains as
+// aps-1, plus the verifier reason code pre-registered for every case. aps-1 stays as published.
+const SET_ID = 'aps-2';
+const OUT = join(ROOT, 'submission', SET_ID);
+const EVALUATION_PROFILE = 'identity-reason/v2';
 const KEY_LABEL = 'aeoess APS TEST-ONLY ot-authority delegation key: ';
 
 const sha256hex = s => createHash('sha256').update(s, 'utf8').digest('hex');
@@ -92,20 +96,24 @@ function widenedLeaf(caseId, assets, notAfter) {
 }
 
 const LEAF_UNTIL = `${DAY}T18:00:00.000Z`;
+// `reason` is the exact code the verifier must return for the case under identity-reason/v2.
+// Declared here, before any run: scope_covered and scope_not_covered are selectChainForAction
+// codes, SCOPE_WIDENING and EXPIRED are verifyAuthorityDelegationChain failure codes, all from
+// agent-passport-system 8.0.1 and passed through by verifier/verify.mjs unchanged.
 const CASES = [
-  { case_id: 'af-1-valid', fault: null, value: 20.5, wo: 'pass',
+  { case_id: 'af-1-valid', fault: null, value: 20.5, wo: 'pass', reason: 'scope_covered',
     construction: 'owner grants operator ZONE-01 and ZONE-02; operator grants agent ZONE-01 until 18:00; call ZONE-01 at 07:00, 20.5 degC',
     leaf: () => leaf('af-1-valid', ['ZONE-01'], LEAF_UNTIL) },
-  { case_id: 'af-2-widened', fault: 'widened', value: 20.5, wo: 'pass',
+  { case_id: 'af-2-widened', fault: 'widened', value: 20.5, wo: 'pass', reason: 'SCOPE_WIDENING',
     construction: 'operator holds ZONE-01 and ZONE-02 but grants the agent ZONE-01 and ZONE-03 (signed directly; the SDK issuer refuses to widen)',
     leaf: () => widenedLeaf('af-2-widened', ['ZONE-01', 'ZONE-03'], LEAF_UNTIL) },
-  { case_id: 'af-3-expired', fault: 'expired', value: 20.5, wo: 'pass',
+  { case_id: 'af-3-expired', fault: 'expired', value: 20.5, wo: 'pass', reason: 'EXPIRED',
     construction: "the agent's grant for ZONE-01 ends at 06:00 (not_after, exclusive); the decision time is 07:00",
     leaf: () => leaf('af-3-expired', ['ZONE-01'], `${DAY}T06:00:00.000Z`) },
-  { case_id: 'af-4-out-of-scope', fault: 'out_of_scope', value: 20.5, wo: 'pass',
+  { case_id: 'af-4-out-of-scope', fault: 'out_of_scope', value: 20.5, wo: 'pass', reason: 'scope_not_covered',
     construction: 'a valid, narrowed chain grants the agent ZONE-02 only; the call is on ZONE-01',
     leaf: () => leaf('af-4-out-of-scope', ['ZONE-02'], LEAF_UNTIL) },
-  { case_id: 'af-5-value-out-of-range', fault: null, value: 22.5, wo: 'refuse',
+  { case_id: 'af-5-value-out-of-range', fault: null, value: 22.5, wo: 'refuse', reason: 'scope_covered',
     construction: "valid chain granting ZONE-01; the value 22.5 is outside the work order's 19.0..21.0, which the delegation does not carry",
     leaf: () => leaf('af-5-value-out-of-range', ['ZONE-01'], LEAF_UNTIL) },
 ];
@@ -134,12 +142,14 @@ const cases = CASES.map(c => {
     delegation_id: chain.at(-1).delegation_id,
     call: { asset: 'ZONE-01', value: c.value, decision_time: DECISION },
     expected_work_order: c.wo,
+    expected_aps_reason: c.reason,
   };
 });
 
 write(join(OUT, 'submission.json'), {
   schema: 'ot-authority-submission/v1',
-  set_id: 'aps-1',
+  set_id: SET_ID,
+  evaluation_profile: EVALUATION_PROFILE,
   source: { project: 'Agent Passport System', repository: 'https://github.com/agent-passport-system/aps-ot-authority', revision: rev },
   delegation_format: 'aps:authority-delegation:v1 (agent-passport-system 8.0.1, npm integrity sha512-g9/AlzqX+L/fKzdsFQICGj59rYnXgeFxZcnmwD8WFNOK8aPSxT8FZEQe/PzGpnpG31xTLeLuMyrInX2B/Id5oA==). '
     + 'Each file is the complete signed chain, a JSON array root to leaf; delegation_id is the leaf\'s. '
@@ -158,5 +168,5 @@ write(join(ROOT, 'verifier', 'trust.json'), {
   signer_verification_methods: { [OPERATOR.vm]: b64(OPERATOR) },
 });
 
-console.log(`submission/aps-1: ${cases.length} cases built at ${rev}`);
+console.log(`submission/${SET_ID}: ${cases.length} cases built at ${rev}`);
 for (const c of cases) console.log(`  ${c.case_id}  ${c.delegation_id}`);
