@@ -1,0 +1,27 @@
+$ node mint/mint.mjs   (at e655486ebe6efa310a71b2cb52c103ed86d91d3d)
+submission/aps-2: 5 cases built at e655486ebe6efa310a71b2cb52c103ed86d91d3d
+  af-1-valid  sha256:f5cbee1f860f7f58423b2ccdecb4143143dc816942763dc32cebdeb3a3cedd6e
+  af-2-widened  sha256:3d82edbe46fe8956a777928657c47083fedd858124dea214b8014e13010eefb2
+  af-3-expired  sha256:cc660515db7a1ac4830a7522f13707c1f527e4846d4c2fee42d1e0cb9ffbc64d
+  af-4-out-of-scope  sha256:3f1868e184a5b8ba1e6709554bc3461296ddfca00eb10e33457861edfb7b2439
+  af-5-value-out-of-range  sha256:4208956f10743a127a3ebd2387839132077e08c04a4ae457c8ab4a4c48adf6e8
+mint exit=0
+$ node verifier/selftest.mjs
+all 14 checks as expected
+selftest exit=0
+testbed 316d9729e01252594ed0672783f2e066ab1a0024 (PR #38 head)
+$ python3 -m runner.authority_fixtures assemble --submission submission/aps-2/submission.json --out runs/day255/fixtures/aps-2
+~/work/aps-ot-authority/runs/day255/fixtures/aps-2: 5 cases from {'project': 'Agent Passport System', 'repository': 'https://github.com/agent-passport-system/aps-ot-authority', 'revision': 'e655486ebe6efa310a71b2cb52c103ed86d91d3d'}, sha256:b1441ee6bf0beb890030a7e42becea24ba3bd2ab89d49546d4012e4006385189
+assemble exit=0
+~/work/aps-ot-authority/runs/day255/fixtures/aps-2: sealed, unchanged
+check exit=0
+$ python3 -m runner.authority_harness --fixtures runs/day255/fixtures/aps-2 --verifier edge/aps --out runs/day255/harness-aps-2 --timeout 120 --trust-edge aps
+harness exit=0
+Result: **PASS**. Verifier Agent Passport System: ok, 39.6 ms. Package `sha256:b1441ee6bf0beb890030a7e42becea24ba3bd2ab89d49546d4012e4006385189`.
+Delegation check as expected 5/5; work-order check as expected 5/5; oracle agrees 5/5; admitted 1. Verifier answers by class: answered 5, indeterminate 0, error 0, timeout 0, malformed 0, unanswered 0.
+Delegation reasons as expected: 5. Identity bindings as expected: 5.
+Complete signed bindings as expected: 5.
+$ pytest -q tests/unit/test_authority_harness.py tests/unit/test_work_order.py  (testbed own tests at PR head, on this Mac)
+    from fastapi import Depends, FastAPI, HTTPException, Request
+E   ModuleNotFoundError: No module named 'fastapi'
+DONE

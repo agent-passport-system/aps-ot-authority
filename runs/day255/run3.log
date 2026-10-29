@@ -1,0 +1,32 @@
+$ strict profile on the legacy aps-1 set (expected: not a pass)
+# authority_fixture: `aps-1` with `aps`
+
+Profile: **identity-reason/v2**. Manifest SHA-256: `21288f218e2983842190d716b0d897feaff868d5d5ffbb06115583750f75244d`.
+
+Result: **FAIL**. Verifier Agent Passport System: ok, 48.2 ms. Package `sha256:cf5cdbf3345b844df6254314f02de001ed3d4ba2141b76355b068d40a26240d6`.
+
+Contract problems: set has no sealed identity-reason/v2 expectations; use a new strict set, or --legacy-verdict-only exclusively for historical reproduction.
+
+Delegation check as expected 5/5; work-order check as expected 5/5; oracle agrees 5/5; admitted 0. Verifier answers by class: answered 5, indeterminate 0, error 0, timeout 0, malformed 0, unanswered 0.
+
+Delegation reasons as expected: 0. Identity bindings as expected: 5.
+
+harness exit=1
+$ legacy verdict-only on aps-1 with the new edge
+# authority_fixture: `aps-1` with `aps`
+
+Profile: **legacy-verdict-only**. Manifest SHA-256: `21288f218e2983842190d716b0d897feaff868d5d5ffbb06115583750f75244d`.
+
+Result: **PASS**. Verifier Agent Passport System: ok, 36.8 ms. Package `sha256:cf5cdbf3345b844df6254314f02de001ed3d4ba2141b76355b068d40a26240d6`.
+
+Contract problems: none.
+
+harness exit=0
+$ mutation: one wrong pre-registered reason must fail strict scoring
+~/work/aps-ot-authority/runs/day255/fixtures/aps-2-mut: 5 cases from {'project': 'Agent Passport System', 'repository': 'https://github.com/agent-passport-system/aps-ot-authority', 'revision': 'WIP-uncommitted'}, sha256:4d86a918bdc5888864a10d35fd000599ba09b519a9f1cc391822e2c8f34da3af
+assemble exit=0
+Result: **FAIL**. Verifier Agent Passport System: ok, 38.9 ms. Package `sha256:4d86a918bdc5888864a10d35fd000599ba09b519a9f1cc391822e2c8f34da3af`.
+Delegation reasons as expected: 4. Identity bindings as expected: 5.
+| `af-3-expired` | the agent's grant for ZONE-01 ends at 06:00 (not_after, exclusive); the decision time is 07:00 | refuse / refuse (EXPIRED; expected reason: SCOPE_WIDENING; reason match: False; identity: sha256:cc660515db7a1ac4830a7522f13707c1f527e4846d4c2fee42d1e0cb9ffbc64d; identity match: True) | pass / pass (none) | no | forbidden (delegation_invalid) |
+harness exit=1
+DONE
