@@ -2,7 +2,8 @@ name: verifier image
 
 # Builds the verifier image, publishes it to GHCR, then runs the testbed's own harness
 # against that exact digest through its Docker sandbox (no --trust-edge).
-# Manual only. No third-party actions: git, docker and python from the runner.
+# Manual only. No third-party actions: git, docker and python from the runner, plus GitHub's own
+# upload-artifact for the record.
 
 on:
   workflow_dispatch:
@@ -10,7 +11,7 @@ on:
       testbed_commit:
         description: autonomous-ot-control commit to run against (316d972 is PR #38's head, the first with the strict identity-reason/v2 scorer)
         required: true
-        default: 316d972
+        default: 316d9729e01252594ed0672783f2e066ab1a0024
       submission:
         description: submission set to assemble and run (aps-2 is strict identity-reason/v2; aps-1 is the historical verdict-only set and needs legacy_verdict_only)
         required: true
@@ -40,6 +41,22 @@ jobs:
           git rev-parse HEAD
           sha256sum edge/aps/verify.mjs edge/aps/trust.json
 
+      # Before the build, so a bad commit fails here and nothing is published. A plain fetch
+      # brings only the default branch, which an open PR's head is not on, so the commit is
+      # fetched by its full sha and checked out detached.
+      - name: Testbed at the pinned commit
+        env:
+          TESTBED_COMMIT: ${{ inputs.testbed_commit }}
+        run: |
+          [[ "$TESTBED_COMMIT" =~ ^[0-9a-f]{40}$ ]] || { echo "testbed_commit must be a full lowercase commit sha"; exit 1; }
+          git init -q testbed && cd testbed
+          git fetch -q --depth 1 "https://github.com/darklordVirtual/autonomous-ot-control.git" "$TESTBED_COMMIT"
+          test "$(git rev-parse FETCH_HEAD)" = "$TESTBED_COMMIT"
+          git checkout -q --detach FETCH_HEAD
+          git rev-parse HEAD
+          python3 -m venv ../venv
+          ../venv/bin/python -m pip install -q --require-hashes --no-deps -r requirements-dev.lock
+
       - name: Build
         working-directory: src
         run: |
@@ -57,15 +74,6 @@ jobs:
           ref=$(docker inspect --format '{{index .RepoDigests 0}}' "${IMAGE}:${GITHUB_SHA}")
           echo "IMAGE_REF=${ref}" >> "$GITHUB_ENV"
           echo "image: ${ref}"
-
-      - name: Testbed at the pinned commit
-        run: |
-          git init -q testbed && cd testbed
-          git fetch -q "https://github.com/darklordVirtual/autonomous-ot-control.git"
-          git checkout -q "${{ inputs.testbed_commit }}"
-          git rev-parse HEAD
-          python3 -m venv ../venv
-          ../venv/bin/python -m pip install -q --require-hashes --no-deps -r requirements-dev.lock
 
       - name: Anonymous pull by digest (what the testbed's CI will do)
         run: |
@@ -101,3 +109,12 @@ jobs:
           { echo "source ${GITHUB_SHA}"; echo "image ${IMAGE_REF:-none}"; echo "testbed $(git -C testbed rev-parse HEAD 2>/dev/null)"; } > record/PINS.txt
           tar czf record.tgz record
           echo "record sha256 $(sha256sum record.tgz)"
+
+      # GitHub's own action, so the harness output and PINS.txt can be downloaded from the run.
+      - name: Upload the record
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: harness-record-${{ github.sha }}
+          path: record.tgz
+          retention-days: 90
