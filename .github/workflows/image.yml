@@ -8,9 +8,17 @@ on:
   workflow_dispatch:
     inputs:
       testbed_commit:
-        description: autonomous-ot-control commit to run against
+        description: autonomous-ot-control commit to run against (316d972 is PR #38's head, the first with the strict identity-reason/v2 scorer)
         required: true
-        default: b1e9f0a
+        default: 316d972
+      submission:
+        description: submission set to assemble and run (aps-2 is strict identity-reason/v2; aps-1 is the historical verdict-only set and needs legacy_verdict_only)
+        required: true
+        default: aps-2
+      legacy_verdict_only:
+        description: pass --legacy-verdict-only (only for reproducing the historical aps-1 result)
+        required: false
+        default: "false"
 
 permissions:
   contents: read
@@ -80,9 +88,10 @@ jobs:
           PY
           cat ../edge/aps/edge.json
           ../venv/bin/python -m runner.edge_check --validate ../edge/aps
-          ../venv/bin/python -m runner.authority_fixtures assemble --submission ../src/submission/aps-1/submission.json --out ../fx
+          ../venv/bin/python -m runner.authority_fixtures assemble --submission "../src/submission/${{ inputs.submission }}/submission.json" --out ../fx
           ../venv/bin/python -m runner.authority_fixtures check ../fx
-          ../venv/bin/python -m runner.authority_harness --fixtures ../fx --verifier ../edge/aps --out ../out --timeout 300 | tee ../harness.txt
+          legacy=""; [ "${{ inputs.legacy_verdict_only }}" = "true" ] && legacy="--legacy-verdict-only"
+          ../venv/bin/python -m runner.authority_harness --fixtures ../fx --verifier ../edge/aps --out ../out --timeout 300 $legacy | tee ../harness.txt
           grep -q "Result: \*\*PASS\*\*" ../harness.txt
 
       - name: Keep the record
